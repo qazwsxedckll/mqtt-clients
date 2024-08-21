@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { signOut, auth } from "@/auth";
+import { signOut, auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar";
 

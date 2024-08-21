@@ -9,15 +9,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const session = await auth();
+  // const session = await auth();
 
-  if (session) {
-    redirect("/home");
-  }
+  // if (session) {
+  //   redirect("/home");
+  // }
 
   return (
     <div className="min-h-screen flex items-center">
@@ -31,10 +30,7 @@ export default async function Page() {
         <CardContent>
           <div className="grid gap-4">
             <form
-              action={async (formData) => {
-                "use server";
-                await signIn("credentials", formData);
-              }}
+              // action={login}
             >
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
