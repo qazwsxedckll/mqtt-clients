@@ -13,22 +13,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRef } from "react";
-import { signup } from "@/actions/auth";
-import { signupFormSchema } from "@/lib/auth-schema";
+import { login, signup } from "@/actions/auth";
+import { loginFormSchema, signupFormSchema } from "@/lib/auth-schema";
 import { z } from "zod";
 import { useFormState } from "react-dom";
 
-export function SignUpForm() {
-  const [state, action, pending] = useFormState(signup, undefined);
+export function LoginForm() {
+  const [state, action, pending] = useFormState(login, undefined);
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const form = useForm<z.infer<typeof signupFormSchema>>({
-    resolver: zodResolver(signupFormSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       username: "",
       password: "",
-      confirm: "",
       ...(state?.fields ?? {}),
     },
   });
@@ -81,25 +80,9 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="confirm"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Repeat your password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              {state?.errors?.confirm ? (
-                <p className="text-red-500">{state.errors.confirm[0]}</p>
-              ) : (
-                <FormMessage />
-              )}
-            </FormItem>
-          )}
-        />
+        {state?.message && <p className="text-red-500">{state.message}</p>}
         <Button className="w-full mt-4" type="submit" disabled={pending}>
-          {pending ? "Submitting..." : "Create an account"}
+          {"Login"}
         </Button>
       </form>
     </Form>

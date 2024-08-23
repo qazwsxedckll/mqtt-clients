@@ -7,11 +7,15 @@ import { redirect } from "next/navigation";
 import { hash } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
 import prisma from "@/lib/db";
-import { signupFormSchema } from "@/lib/signup";
+import { loginFormSchema, signupFormSchema } from "@/lib/auth-schema";
+import { Prisma } from "@prisma/client";
 
-interface ActionResult {
-  error: string;
-}
+const option = {
+  memoryCost: 19456,
+  timeCost: 2,
+  outputLen: 32,
+  parallelism: 1,
+};
 
 export type SignUpFormState =
   | {
@@ -27,14 +31,23 @@ export type SignUpFormState =
     }
   | undefined;
 
+export type LoginFormState =
+  | {
+      fields?: {
+        username?: string;
+      };
+      errors?: {
+        username?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
+
 export async function signup(
-  state: SignUpFormState,
+  _: SignUpFormState,
   formData: FormData
 ): Promise<SignUpFormState> {
-  console.log("signup action");
-
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   const validatedFields = signupFormSchema.safeParse({
     username: formData.get("username"),
     password: formData.get("password"),
@@ -46,35 +59,34 @@ export async function signup(
       fields: validatedFields.data,
       errors: validatedFields.error.flatten().fieldErrors,
     };
-  } else {
-    if (validatedFields.data.username === "test") {
-      return {
-        fields: {
-          username: validatedFields.data.username,
-        },
-      };
-    }
   }
 
-  const passwordHash = await hash(validatedFields.data.password, {
-    // recommended minimum parameters
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
+  const passwordHash = await hash(validatedFields.data.password, option);
   const userId = generateIdFromEntropySize(10); // 16 characters long
 
-  return;
-
-  // TODO: check if username is already used
-  await prisma.user.create({
-    data: {
-      id: userId,
-      userName: validatedFields.data.username,
-      passwordHash,
-    },
-  });
+  try {
+    await prisma.user.create({
+      data: {
+        id: userId,
+        userName: validatedFields.data.username,
+        passwordHash,
+      },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        return {
+          fields: {
+            username: validatedFields.data.username,
+          },
+          errors: {
+            username: ["Username is already taken"],
+          },
+        };
+      }
+    }
+    throw e;
+  }
 
   const session = await lucia.createSession(userId, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
@@ -83,53 +95,49 @@ export async function signup(
     sessionCookie.value,
     sessionCookie.attributes
   );
+
   return redirect("/");
 }
 
-async function login(_: any, formData: FormData): Promise<ActionResult> {
+export async function login(
+  _: any,
+  formData: FormData
+): Promise<LoginFormState> {
   "use server";
-  const username = formData.get("username");
-  if (
-    typeof username !== "string" ||
-    username.length < 3 ||
-    username.length > 31 ||
-    !/^[a-z0-9_-]+$/.test(username)
-  ) {
+  const validatedFields = loginFormSchema.safeParse({
+    username: formData.get("username"),
+    password: formData.get("password"),
+  });
+
+  if (!validatedFields.success) {
     return {
-      error: "Invalid username",
-    };
-  }
-  const password = formData.get("password");
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
+      fields: validatedFields.data,
+      message: "Incorrect username or password",
     };
   }
 
   const existingUser = await prisma.user.findUnique({
     where: {
-      userName: username,
+      userName: validatedFields.data.username,
     },
   });
+
   if (!existingUser) {
     return {
-      error: "Incorrect username or password",
+      fields: validatedFields.data,
+      message: "Incorrect username or password",
     };
   }
 
-  const validPassword = await verify(existingUser.passwordHash, password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
+  const validPassword = await verify(
+    existingUser.passwordHash,
+    validatedFields.data.password,
+    option
+  );
   if (!validPassword) {
     return {
-      error: "Incorrect username or password",
+      fields: validatedFields.data,
+      message: "Incorrect username or password",
     };
   }
 
@@ -140,5 +148,5 @@ async function login(_: any, formData: FormData): Promise<ActionResult> {
     sessionCookie.value,
     sessionCookie.attributes
   );
-  return redirect("/");
+  return redirect("/hahaha");
 }
