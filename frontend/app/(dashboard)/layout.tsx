@@ -19,8 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar";
+import { logout } from "@/actions/auth";
 
 export default async function Layout({
   children,
@@ -115,11 +115,7 @@ export default async function Layout({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <form
-                  action={async () => {
-                    "use server";
-                  }}
-                >
+                <form action={logout}>
                   <Button variant="ghost" type="submit">
                     Logout
                   </Button>

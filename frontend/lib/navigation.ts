@@ -8,16 +8,6 @@ export interface Navigation {
 
 export const navigations: Navigation[] = [
   {
-    name: "Home",
-    href: "/home",
-    icon: Castle,
-  },
-  {
-    name: "Things",
-    href: "/things",
-    icon: Users,
-  },
-  {
     name: "MQTT Clients",
     href: "/mqtt-clients",
     icon: Send,

@@ -2,7 +2,7 @@
 
 import { verify } from "@node-rs/argon2";
 import { cookies } from "next/headers";
-import { lucia } from "@/lib/auth";
+import { lucia, verifySession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { hash } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
@@ -148,5 +148,21 @@ export async function login(
     sessionCookie.value,
     sessionCookie.attributes
   );
-  return redirect("/hahaha");
+  return redirect("/");
+}
+
+export async function logout() {
+  const { session } = await verifySession();
+  if (!session) {
+    return redirect("/");
+  }
+
+  await lucia.invalidateSession(session.id);
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+  return redirect("/");
 }

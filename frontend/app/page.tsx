@@ -1,9 +1,15 @@
 import AuthCard from "@/components/auth-card";
 import { LoginForm } from "@/components/login";
-import { SignUpForm } from "@/components/signup";
+import { getUser, verifySession } from "@/lib/auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+  const { user } = await verifySession();
+  if (user) {
+    redirect("/mqtt-clients");
+  }
+
   return (
     <AuthCard
       title="Login"
