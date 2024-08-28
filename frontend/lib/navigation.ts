@@ -1,4 +1,4 @@
-import { Users, LucideIcon, Castle, Send } from "lucide-react";
+import { LucideIcon, Send } from "lucide-react";
 
 export interface Navigation {
   name: string;

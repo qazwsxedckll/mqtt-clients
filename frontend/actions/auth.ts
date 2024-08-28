@@ -45,9 +45,11 @@ export type LoginFormState =
   | undefined;
 
 export async function signup(
-  _: SignUpFormState,
+  state: SignUpFormState,
   formData: FormData
 ): Promise<SignUpFormState> {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const validatedFields = signupFormSchema.safeParse({
     username: formData.get("username"),
     password: formData.get("password"),

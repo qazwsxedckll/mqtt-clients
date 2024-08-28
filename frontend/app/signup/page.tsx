@@ -1,5 +1,5 @@
-import AuthCard from "@/components/auth-card";
-import { SignUpForm } from "@/components/signup";
+import AuthCard from "@/components/auth/auth-card";
+import SignUpForm from "@/components/auth/signup";
 import Link from "next/link";
 
 export default async function Page() {
