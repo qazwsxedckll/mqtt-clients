@@ -1,0 +1,14 @@
+[env]
+# example: TEMPLATE_LOG__LEVEL=debug
+prefix = "TEMPLATE_"
+
+[log]
+# level can be changed at runtime
+level = "info"
+add_source = false
+to_file = true
+base_name = "test"
+directory = "log"
+rotate_size = "100MB"
+rotate_interval = "24h" # valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+rotate_at_midnight = true

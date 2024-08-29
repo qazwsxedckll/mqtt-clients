@@ -1,0 +1,13 @@
+[env]
+prefix = "TEST_"
+
+[log]
+# level can be changed at runtime
+level = "warn"
+add_source = true
+to_file = false
+base_name = "testdata"
+directory = "testlog"
+rotate_size = "10MB"
+rotate_interval = "10m" # valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+rotate_at_midnight = false
