@@ -22,10 +22,14 @@ var DefaultConfig = Config{
 		RotateInterval:   "24h",
 		RotateAtMidnight: true,
 	},
+	Server: Server{
+		Addr: ":8080",
+	},
 }
 
 type Config struct {
-	Log Log `koanf:"log"`
+	Log    Log    `koanf:"log"`
+	Server Server `koanf:"server"`
 }
 
 type Log struct {
@@ -37,6 +41,10 @@ type Log struct {
 	RotateSize       string `koanf:"rotate_size"`
 	RotateInterval   string `koanf:"rotate_interval"`
 	RotateAtMidnight bool   `koanf:"rotate_at_midnight"`
+}
+
+type Server struct {
+	Addr string `koanf:"addr"`
 }
 
 func Load(cfgFile string) (Config, error) {

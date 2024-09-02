@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/alecthomas/units v0.0.0-20240626203959-61d1e3462e30
+	github.com/go-chi/chi/v5 v5.1.0
 	github.com/knadh/koanf/parsers/toml v0.1.0
 	github.com/knadh/koanf/providers/env v0.1.0
 	github.com/knadh/koanf/providers/file v1.1.0
@@ -11,6 +12,7 @@ require (
 	github.com/qazwsxedckll/logh v1.1.1
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
+	golang.org/x/sync v0.8.0
 )
 
 require (

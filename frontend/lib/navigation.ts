@@ -12,4 +12,9 @@ export const navigations: Navigation[] = [
     href: "/mqtt-clients",
     icon: Send,
   },
+  {
+    name: "Payments",
+    href: "/payments",
+    icon: Send,
+  },
 ];

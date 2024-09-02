@@ -1,7 +1,16 @@
 package cmd
 
 import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"core/internal/server"
+
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 )
 
 // runCmd represents the run command
@@ -15,7 +24,28 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("run called")
+		service := server.NewService(nil)
+		s := server.New(c, service)
+
+		eg, ctx := errgroup.WithContext(context.Background())
+		eg.Go(func() error {
+			return s.Start(ctx)
+		})
+
+		eg.Go(func() error {
+			quit := make(chan os.Signal, 1)
+			signal.Notify(quit, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT)
+			select {
+			case <-ctx.Done():
+				return nil
+			case sig := <-quit:
+				return fmt.Errorf("received signal: %v", sig.String())
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			logger.Error("server error", "error", err)
+		}
 	},
 }
 

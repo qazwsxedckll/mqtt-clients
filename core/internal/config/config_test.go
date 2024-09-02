@@ -40,6 +40,9 @@ func TestLoad(t *testing.T) {
 					RotateInterval:   "10m",
 					RotateAtMidnight: false,
 				},
+				Server: Server{
+					Addr: ":8081",
+				},
 			},
 		},
 	}
